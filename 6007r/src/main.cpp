@@ -18,6 +18,7 @@
 
 
   pros::adi::Pneumatics hood(2, true);
+  pros::adi::Pneumatics intakeHood(1, true);
 	pros::MotorGroup left_mg({-16, -3, -15});    // Creates a motor group with forwards ports 1 & 3 and reversed port 2
 	pros::MotorGroup right_mg({9, 18, 19});  // Creates a motor group with forwards port 5 and reversed ports 4 & 6
 
@@ -123,7 +124,17 @@ void competition_initialize() {}
  * will be stopped. Re-enabling the robot will restart the task, not re-start it
  * from where it left off.
  */
-void autonomous() {}
+void autonomous() {
+  chassis.setPose((16.88+7), 79.64, 180, false);// robot starts with right side flush against 
+                                                // parking barrier's side opposite the wall, 
+                                                // with the very back of the robot lined up 
+                                                // with the back of the red piece
+  chassis.moveToPoint((23.44-8), 79.64, 5);//Move in front of the loader
+  chassis.turnToHeading(270, 2);//Turn to face the loader
+  intakeHood.extend();//Extend intake hood to prepare for intake
+  chassis.moveToPoint()
+
+}
 
 /**
  * Runs the operator control code. This function will be started in its own task
@@ -152,12 +163,15 @@ void opcontrol() {
       intake.move_voltage(12000);
       upperIntake.move_voltage(12000);
       hood.extend();
+    
+    } else if (master.get_digital(pros::E_CONTROLLER_DIGITAL_X)){
+      intakeHood.extend();
 
     } else {
       intake.move_voltage(0);
       upperIntake.move_voltage(0);
-            hood.retract();
-
+      hood.retract(); //Was indented before I edit, I think its typo so I unindented it
+      intakeHood.retract();
     }
 	}
 }
