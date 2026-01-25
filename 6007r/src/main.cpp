@@ -132,7 +132,10 @@ void autonomous() {
   chassis.moveToPoint((23.44-8), 79.64, 5);//Move in front of the loader
   chassis.turnToHeading(270, 2);//Turn to face the loader
   intakeHood.extend();//Extend intake hood to prepare for intake
-  chassis.moveToPoint()
+  chassis.moveToPoint((0+/*difference between back of robot and scraper*/), 23.44, 27);//Move into loader
+  intake.move_voltage(/*enough to grab all balls*/);//Start intaking
+  chassis.turnToHeading(45, 2, false); //be able to move around goal
+  chassis.moveToPoint(71.84, 34.84, 3); //Move to approx middle of goal
 
 }
 
