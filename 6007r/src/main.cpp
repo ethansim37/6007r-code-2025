@@ -1,4 +1,5 @@
 #include "main.h"
+#include "lemlib/api.hpp"
 #include "lemlib/chassis/chassis.hpp"
 #include "lemlib/chassis/chassis.hpp"
 #include "lemlib/chassis/trackingWheel.hpp"
@@ -27,8 +28,6 @@
 
   pros::IMU imu(7);  // Inertial sensor on port 7
 
-  pros::Rotation horizontalRotation(1, false);  // Horizontal rotation sensor on port 1
-  lemlib::TrackingWheel horizontalTracker(&horizontalRotation, 1.0, 0);  // Horizontal tracking wheel with 1 inch diameter
 
   lemlib::Drivetrain drivetrain(&left_mg, &right_mg, 11.5, lemlib::Omniwheel::NEW_325, 450, 8);
 
@@ -51,7 +50,7 @@ lemlib::ControllerSettings
 
 lemlib::OdomSensors sensors(NULL, // vertical tracking wheel 1, set to null
                             nullptr, // vertical tracking wheel 2, set to nullptr as we are using IMEs
-                            &horizontalTracker, // horizontal tracking wheel 1
+                            NULL, // horizontal tracking wheel 1
                             nullptr, // horizontal tracking wheel 2, set to nullptr as we don't have a second one
                             &imu // inertial sensor
 );
