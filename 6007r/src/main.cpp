@@ -17,6 +17,8 @@
 
 	pros::Controller master(pros::E_CONTROLLER_MASTER);
 
+  pros::Rotation horizontal_encoder(1);
+
 
   pros::adi::Pneumatics hood(2, true);
   pros::adi::Pneumatics intakeHood(1, true);
@@ -24,37 +26,46 @@
 	pros::MotorGroup right_mg({9, 18, 19});  // Creates a motor group with forwards port 5 and reversed ports 4 & 6
 
   pros::Motor intake(-2);
-  pros::Motor upperIntake(13);
+  pros::Motor upperIntake(7);
 
-  pros::IMU imu(7);  // Inertial sensor on port 7
+  pros::IMU imu(13);  // Inertial sensor on port 7
 
+  lemlib::TrackingWheel horizontal_tracking_wheel(&horizontal_encoder, lemlib::Omniwheel::NEW_2, -2.25);
 
   lemlib::Drivetrain drivetrain(&left_mg, &right_mg, 11.5, lemlib::Omniwheel::NEW_325, 450, 8);
 
-  lemlib::ControllerSettings lateralSettings(6, 0, 7, 0.45, 1.3, 300, 0.8, 250,
-                                           18);
+// lateral PID controller
+lemlib::ControllerSettings lateral_controller(10, // proportional gain (kP)
+                                              0, // integral gain (kI)
+                                              3, // derivative gain (kD)
+                                              0, // anti windup
+                                              0, // small error range, in inches
+                                              0, // small error range timeout, in milliseconds
+                                              0, // large error range, in inches
+                                              0, // large error range timeout, in milliseconds
+                                              0 // maximum acceleration (slew)
+);
+
+// angular PID controller
+lemlib::ControllerSettings angular_controller(2, // proportional gain (kP)
+                                              0, // integral gain (kI)
+                                              10, // derivative gain (kD)
+                                              0, // anti windup
+                                              0, // small error range, in degrees
+                                              0, // small error range timeout, in milliseconds
+                                              0, // large error range, in degrees
+                                              0, // large error range timeout, in milliseconds
+                                              0 // maximum acceleration (slew)
+);
 
 
-lemlib::ControllerSettings
-    angularSettings(2.2,    // proportional gain (kP)
-                    0.0015, // integral gain (kI)
-                    14.5,   // derivative gain (kD)
-                    6.0,    // anti windup
-                    0.5,    // small error range, in inches
-                    150,    // small error range timeout, in milliseconds
-                    0,      // large error range, in inches
-                    0,      // large error range timeout, in milliseconds
-                    0       // maximum acceleration (slew)
-    );
-
-
-lemlib::OdomSensors sensors(NULL, // vertical tracking wheel 1, set to null
+lemlib::OdomSensors sensors(nullptr, // vertical tracking wheel 1, set to null
                             nullptr, // vertical tracking wheel 2, set to nullptr as we are using IMEs
-                            NULL, // horizontal tracking wheel 1
+                            &horizontal_tracking_wheel, // horizontal tracking wheel 1
                             nullptr, // horizontal tracking wheel 2, set to nullptr as we don't have a second one
                             &imu // inertial sensor
 );
-  lemlib::Chassis chassis(drivetrain, lateralSettings, angularSettings, sensors);
+  lemlib::Chassis chassis(drivetrain, lateral_controller, angular_controller, sensors);
 
 
 
@@ -83,15 +94,21 @@ void on_center_button() {
  * to keep execution time for this mode under a few seconds.
  */
 void initialize() {
-	pros::lcd::initialize();
-	pros::lcd::set_text(1, "Hello PROS User!");
+    pros::lcd::initialize(); // initialize brain screen
+    chassis.calibrate(); // calibrate sensors
+    // print position to brain screen
+    pros::Task screen_task([&]() {
+        while (true) {
+            // print robot location to the brain screen
+            pros::lcd::print(0, "X: %f", chassis.getPose().x); // x
+            pros::lcd::print(1, "Y: %f", chassis.getPose().y); // y
+            pros::lcd::print(2, "Theta: %f", chassis.getPose().theta); // heading
+            // delay to save resources
+            pros::delay(20);
+        }
+    });
 
-	pros::lcd::register_btn1_cb(on_center_button);
-
-
-
-  pros::delay(1000);
-  autonomous(); //Emulate autonomous mode
+   //Emulate autonomous mode
 
   
 
@@ -131,13 +148,19 @@ void competition_initialize() {}
  * from where it left off.
  */
 void autonomous() {
-  chassis.setPose((16.88+7), 79.64, 180, false);// robot starts with right side flush against 
-                                                // parking barrier's side opposite the wall, 
-                                                // with the very back of the robot lined up 
-                                                // with the back of the red piece
-  chassis.moveToPoint((23.44-8), 79.64, 5);//Move in front of the loader
-  chassis.turnToHeading(270, 2);//Turn to face the loader
-  intakeHood.extend();//Extend intake hood to prepare for intake
+
+  chassis.setPose(0, 0, 0); 
+  chassis.turnToHeading(90, 5000);
+
+
+  // chassis.setPose((16.88+7), 79.64, 180, false);// robot starts with right side flush against 
+  //                                               // parking barrier's side opposite the wall, 
+  //                                               // with the very back of the robot lined up 
+  //                                               // with the back of the red piece
+  // chassis.moveToPoint((23.44-8), 79.64, 5);//Move in front of the loader
+  // chassis.turnToHeading(270, 2);//Turn to face the loader
+  // intakeHood.extend();//Extend intake hood to prepare for intake
+  
 
 }
 
