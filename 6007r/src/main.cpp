@@ -108,8 +108,6 @@ void initialize() {
         }
     });
 
-   //Emulate autonomous mode
-
   
 
 
@@ -198,7 +196,7 @@ void opcontrol() {
     } else {
       intake.move_voltage(0);
       upperIntake.move_voltage(0);
-      hood.retract(); //Was indented before I edit, I think its typo so I unindented it
+      hood.retract();
       intakeHood.retract();
     }
 	}
