@@ -152,6 +152,9 @@ void brainColor(uint32_t color){
 
 void autonomous() {
   brainColor(0x000000); //red
+
+
+  //Pick up BALLS (step 1 in sketch)
   chassis.setPose((16.88+7), 79.64, 180, false); //robot starts with right side flush against 
                                                  // parking barrier's side opposite the wall, 
                                                  // with the very back of the robot lined up 
@@ -164,14 +167,66 @@ void autonomous() {
   intake.move_voltage(0);//end intake
   intakeHood.retract();//Retract intake hood
 
+
+  //release balls (step 2 in sketch)
   chassis.moveToPose(48.26, 48.24, 90, 3000);//Move around goal
-  chassis.moveToPose(95.41, 23.44, 90, 3000);
-  chassis.moveToPose(94.62, 23.44, 90, 3000);
-  intake.move_voltage(12000);//Start intake to prepare for shooting
-  upperIntake.move_voltage(12000);
-  intake.move_voltage(0);//Stop intake
+  chassis.moveToPose(95.41, 23.44, 90, 3000);//Move around goal
+  chassis.moveToPose(94.62, 23.44, 90, 3000);//Align with goal
+  intake.move_voltage(12000);//Outtake BALLS into goal
+  upperIntake.move_voltage(12000);//Outtake BALLS into goal
+  intake.move_voltage(0);//Stop outtake
   upperIntake.move_voltage(0);
   
+
+  //Get into goal (step 3 in sketch)
+  intakeHood.extend();//Extend intake hood to prepare for intake
+  chassis.moveToPose(138.81-(23 + 3),//23 + x (higher x value = more push into goal)
+                  23.44,//y value
+                  90,//direction
+                  3000//timeout
+  );
+  intake.move_voltage(12000);//Intake BALLS
+  pros::delay(5000);//Wait to ensure all BALLS are intaken
+  intake.move_voltage(0);//Stop intake
+  intakeHood.retract();//Retract intake hood
+
+
+  //Outtake balls into goal (step 4 in sketch)
+  chassis.moveToPose(92,
+                     23.44,
+                     90,
+                     3000
+  );//Move into goal
+  intake.move_voltage(12000);//Outtake BALLS into goal
+  upperIntake.move_voltage(12000);//Outtake BALLS into goal
+  pros::delay(5000);
+  intake.move_voltage(0);//Stop outtake
+  upperIntake.move_voltage(0);
+
+
+  //reach other loader (step 5 in sketch)
+  chassis.moveToPose(110, //x value
+                     23.44,//y value
+                     90,//direction
+                     3000//timeout
+  );//back out of goal
+  chassis.moveToPose(100, //x value
+                     70,//y value
+                     -45,//direction
+                     3000//timeout
+  );//move into position to reach loader
+  intakeHood.extend();//Extend intake hood to prepare for intake of BALLS
+  chassis.moveToPose(138.81-(23 + 3),//23 + x (higher x value = more push into goal)
+                     116.97,//y value
+                     90,//direction
+                     4000//timeout
+  );//Move to the loader to intake BALLS
+  intake.move_voltage(12000);
+  pros::delay(5000);//Wait to ensure all BALLS are intaken
+  intake.move_voltage(0);//Stop intake
+  intakeHood.retract();//Retract intake hood
+
+
 }
 
 /**
