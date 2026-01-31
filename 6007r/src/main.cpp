@@ -154,29 +154,64 @@ void autonomous() {
   brainColor(0x000000); //red
 
 
-  //Pick up BALLS (step 1 in sketch)
-  chassis.setPose((16.88+7), 79.64, 180, false); //robot starts with right side flush against 
+  //Pick up BALLS (step 1)
+  chassis.setPose((16.88+7), 60.77, 0, false); //robot starts with right side flush against 
                                                  // parking barrier's side opposite the wall, 
                                                  // with the very back of the robot lined up 
                                                  // with the back of the red piece
   intakeHood.extend();//Extend intake hood to prepare for intake
-  chassis.moveToPose(23-1, 23.44+25, -90, 4000);//Move to the loader to intake BALLS
-  chassis.moveToPose(23-20, 23.44+25, -90, 4000);//Move to the loader to intake BALLS
+  hood.retract();//Ensure hood is retracted so no BALLS fly away
+  chassis.moveToPose(16.88+7, 116.97-5, -90, 2000);//Move in front the loader
+  chassis.moveToPose(23-20, 116.97-5, -90, 2000);//Move into the loader to intake BALLS
   intake.move_voltage(12000);
-  pros::delay(5000);//Wait to ensure all BALLS are intaken
+  for(int i = 0; i < 5; i++){
+    chassis.moveToPose(23-19, 116.97-5, -90, 1000);//Ensure all BALLS are intaken
+  }
   intake.move_voltage(0);//end intake
+  chassis.moveToPose(23+22, 116.97-6, -90, 3000,{.forwards = false});//Back away from loader
+
+  // Drop balls into goal (step 2)
+  pros::delay(1000);
+  hood.extend();//Extend hood to prepare for outtake
+  intake.move_voltage(12000);//Outtake
+  upperIntake.move_voltage(12000);//Outtake
+  pros::delay(5000);
+  intake.move_voltage(-6000);//jitter to settle BALLS
+  pros::delay(10);
+  intake.move_voltage(12000);//Resume outtake
+  pros::delay(2000);
+  intake.move_voltage(0);//Stop outtake
+  upperIntake.move_voltage(0);
+
+  pros::delay(10000);//time pasued to manually push hood up
   intakeHood.retract();//Retract intake hood
 
-
-  //release balls (step 2 in sketch)
-  chassis.moveToPose(48.26, 48.24, 90, 3000);//Move around goal
-  chassis.moveToPose(95.41, 23.44, 90, 3000);//Move around goal
-  chassis.moveToPose(94.62, 23.44, 90, 3000);//Align with goal
+  //Park robot (step 3)
+  hood.extend();
+  upperIntake.move_voltage(12000);//Hold any remaining BALLS
+  intake.move_voltage(-12000);
+  chassis.moveToPose(7-1, 73.43, 180, 3000);//Move near goal
+  chassis.moveToPose(7-1, 110-20, 180, 3000, {.forwards = false, .maxSpeed = 60});//back away
+  chassis.moveToPose(7-7, 50, 180, 3000, {.minSpeed = 120});//run into parking zone
+  for(int i = 0; i < 100; i++){
+    chassis.tank(-120, -120);
+    pros::delay(100);
+    chassis.tank(120, 120);
+    pros::delay(1000);
+  }
+  /*
+  //release BALLS (step 2 in sketch)
+  chassis.moveToPose(48.26, 95.40, 90, 3000);//Move around goal
+  chassis.moveToPose(95.41, 95.40, 90, 3000);//Move around goal
+  chassis.moveToPose(123.57, 116.97, 90, 3000);//Get ready to back into goal
+  chassis.moveToPose(92.5, 116.97, 90, 3000,{.forwards = false});//Back into goal 
+  hood.extend();//Extend hood to prepare for outtake
   intake.move_voltage(12000);//Outtake BALLS into goal
   upperIntake.move_voltage(12000);//Outtake BALLS into goal
   intake.move_voltage(0);//Stop outtake
   upperIntake.move_voltage(0);
   
+  pros::delay(10000000); //end code
 
   //Get into goal (step 3 in sketch)
   intakeHood.extend();//Extend intake hood to prepare for intake
@@ -226,7 +261,7 @@ void autonomous() {
   intake.move_voltage(0);//Stop intake
   intakeHood.retract();//Retract intake hood
 
-
+*/
 }
 
 /**
@@ -247,12 +282,12 @@ void opcontrol() {
 	while (true) {
         chassis.tank(master.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y), master.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_Y));
 
-      if (master.get_digital(pros::E_CONTROLLER_DIGITAL_L2)) {
+      if (master.get_digital(pros::E_CONTROLLER_DIGITAL_L2) || master.get_digital(pros::E_CONTROLLER_DIGITAL_L1)) {
       intake.move_voltage(12000);
-      upperIntake.move_voltage(5000);
+      //upperIntake.move_voltage(5000);
       hood.retract();
 
-    } else if (master.get_digital(pros::E_CONTROLLER_DIGITAL_R2)) {
+    } else if (master.get_digital(pros::E_CONTROLLER_DIGITAL_R2) || master.get_digital(pros::E_CONTROLLER_DIGITAL_R1)) {
       intake.move_voltage(12000);
       upperIntake.move_voltage(12000);
       hood.extend();
