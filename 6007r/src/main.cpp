@@ -183,7 +183,7 @@ void autonomous() {
   intake.move_voltage(0);//Stop outtake
   upperIntake.move_voltage(0);
 
-  pros::delay(10000);//time pasued to manually push hood up
+  //pros::delay(10000);//time pasued to manually push hood up
   intakeHood.retract();//Retract intake hood
 
   //Park robot (step 3)
