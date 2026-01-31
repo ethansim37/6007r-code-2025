@@ -193,7 +193,7 @@ void autonomous() {
   chassis.moveToPose(7-1, 73.43, 180, 3000);//Move near goal
   chassis.moveToPose(7-1, 110-20, 180, 3000, {.forwards = false, .maxSpeed = 60});//back away
   chassis.moveToPose(7-7, 50, 180, 3000, {.minSpeed = 120});//run into parking zone
-  for(int i = 0; i < 100; i++){
+  for(int i = 0; i <10; i++){
     chassis.tank(-120, -120);
     pros::delay(100);
     chassis.tank(120, 120);
