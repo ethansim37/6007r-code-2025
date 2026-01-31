@@ -145,21 +145,33 @@ void competition_initialize() {}
  * will be stopped. Re-enabling the robot will restart the task, not re-start it
  * from where it left off.
  */
+void brainColor(uint32_t color){
+  pros::screen::set_pen(color);
+  pros::screen::fill_rect(0, 0, 480, 240); // full Brain screen
+}
+
 void autonomous() {
+  brainColor(0x000000); //red
+  chassis.setPose((16.88+7), 79.64, 180, false); //robot starts with right side flush against 
+                                                 // parking barrier's side opposite the wall, 
+                                                 // with the very back of the robot lined up 
+                                                 // with the back of the red piece
+  intakeHood.extend();//Extend intake hood to prepare for intake
+  chassis.moveToPose(23-1, 23.44+25, -90, 4000);//Move to the loader to intake BALLS
+  chassis.moveToPose(23-20, 23.44+25, -90, 4000);//Move to the loader to intake BALLS
+  intake.move_voltage(12000);
+  pros::delay(5000);//Wait to ensure all BALLS are intaken
+  intake.move_voltage(0);//end intake
+  intakeHood.retract();//Retract intake hood
 
-  chassis.setPose(0, 0, 0); 
-  chassis.turnToHeading(90, 5000);
-
-
-  // chassis.setPose((16.88+7), 79.64, 180, false);// robot starts with right side flush against 
-  //                                               // parking barrier's side opposite the wall, 
-  //                                               // with the very back of the robot lined up 
-  //                                               // with the back of the red piece
-  // chassis.moveToPoint((23.44-8), 79.64, 5);//Move in front of the loader
-  // chassis.turnToHeading(270, 2);//Turn to face the loader
-  // intakeHood.extend();//Extend intake hood to prepare for intake
+  chassis.moveToPose(48.26, 48.24, 90, 3000);//Move around goal
+  chassis.moveToPose(95.41, 23.44, 90, 3000);
+  chassis.moveToPose(94.62, 23.44, 90, 3000);
+  intake.move_voltage(12000);//Start intake to prepare for shooting
+  upperIntake.move_voltage(12000);
+  intake.move_voltage(0);//Stop intake
+  upperIntake.move_voltage(0);
   
-
 }
 
 /**
