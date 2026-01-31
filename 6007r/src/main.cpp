@@ -161,14 +161,14 @@ void autonomous() {
                                                  // with the back of the red piece
   intakeHood.extend();//Extend intake hood to prepare for intake
   hood.retract();//Ensure hood is retracted so no BALLS fly away
-  chassis.moveToPose(16.88+7, 116.97-0, -90, 2000, {.maxSpeed = 100});//Move in front the loader
-  chassis.moveToPose(23-20, 116.97-0, -90, 2000,  {.maxSpeed = 100});//Move into the loader to intake BALLS
+  chassis.moveToPose(16.88+5, 116.97-10, -90, 2000, {.maxSpeed = 100});//Move in front the loader
+  chassis.moveToPose(23-20, 116.97-10, -90, 2000,  {.maxSpeed = 100});//Move into the loader to intake BALLS
   intake.move_voltage(12000);
   for(int i = 0; i < 5; i++){
-    chassis.moveToPose(23-19, 116.97-0, -90, 1000);//Ensure all BALLS are intaken
+    chassis.moveToPose(23-19, 116.97-10, -90, 1000);//Ensure all BALLS are intaken
   }
   intake.move_voltage(0);//end intake
-  chassis.moveToPose(23+22, 116.97-0, -90, 3000,{.forwards = false});//Back away from loader
+  chassis.moveToPose(23+22, 116.97-10, -90, 3000,{.forwards = false});//Back away from loader
 
   // Drop balls into goal (step 2)
   pros::delay(1000);
@@ -193,7 +193,7 @@ void autonomous() {
   chassis.moveToPose(7-1, 73.43, 180, 3000);//Move near goal
   chassis.moveToPose(7-1, 110-20, 180, 3000, {.forwards = false, .maxSpeed = 60});//back away
   chassis.moveToPose(7-7, 50, 180, 3000, {.minSpeed = 120});//run into parking zone
-  for(int i = 0; i <10; i++){
+  for(int i = 0; i <2; i++){
     chassis.tank(-120, -120);
     pros::delay(100);
     chassis.tank(120, 120);
@@ -295,11 +295,12 @@ void opcontrol() {
     } else if (master.get_digital(pros::E_CONTROLLER_DIGITAL_X)){
       intakeHood.extend();
 
+    } else if (master.get_digital(pros::E_CONTROLLER_DIGITAL_B)){
+      intakeHood.retract();
     } else {
       intake.move_voltage(0);
       upperIntake.move_voltage(0);
       hood.retract();
-      intakeHood.retract();
     }
 	}
 }
