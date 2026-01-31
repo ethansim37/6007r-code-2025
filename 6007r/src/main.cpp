@@ -161,14 +161,14 @@ void autonomous() {
                                                  // with the back of the red piece
   intakeHood.extend();//Extend intake hood to prepare for intake
   hood.retract();//Ensure hood is retracted so no BALLS fly away
-  chassis.moveToPose(16.88+7, 116.97-5, -90, 2000);//Move in front the loader
-  chassis.moveToPose(23-20, 116.97-5, -90, 2000);//Move into the loader to intake BALLS
+  chassis.moveToPose(16.88+7, 116.97-0, -90, 2000, {.maxSpeed = 100});//Move in front the loader
+  chassis.moveToPose(23-20, 116.97-0, -90, 2000,  {.maxSpeed = 100});//Move into the loader to intake BALLS
   intake.move_voltage(12000);
   for(int i = 0; i < 5; i++){
-    chassis.moveToPose(23-19, 116.97-5, -90, 1000);//Ensure all BALLS are intaken
+    chassis.moveToPose(23-19, 116.97-0, -90, 1000);//Ensure all BALLS are intaken
   }
   intake.move_voltage(0);//end intake
-  chassis.moveToPose(23+22, 116.97-6, -90, 3000,{.forwards = false});//Back away from loader
+  chassis.moveToPose(23+22, 116.97-0, -90, 3000,{.forwards = false});//Back away from loader
 
   // Drop balls into goal (step 2)
   pros::delay(1000);
