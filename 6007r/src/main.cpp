@@ -151,7 +151,7 @@ void brainColor(uint32_t color){
 }
 
 void autonomous() {
-  brainColor(0x000000); //red
+  brainColor(0xff0000); //red
 
 
   //Pick up BALLS (step 1)
